@@ -3,17 +3,19 @@
 # mirna-kras — full pipeline container
 #
 # Builds everything from source at build time:
-#   - MC-Flashfold (C → Linux ELF via gcc)   ← ./docker/build-context/MC-Flashfold-v37.0/
-#   - RINexus (Java → .class via Maven)      ← ./docker/build-context/rimap_java_code/
+#   - MC-Flashfold (C → Linux ELF via gcc) from docker/build-context/MC-Flashfold-v37.0/
+#   - RINexus (Java → .class via Maven) from docker/build-context/rimap_java_code/
 #
 # Quick start:
 #
 #   docker build -t mirna-kras .
-#   docker run --rm -p 8000:8000 mirna-kras                              # mkdocs serve
-#   docker run --rm -v $(pwd)/work:/app/work mirna-kras bash            # shell for the pipeline
+#   docker run --rm -p 8000:8000 mirna-kras                 # mkdocs dev server
+#   docker run --rm -it mirna-kras bash                   # shell for the pipeline
 #
-# Both build-context bundles are committed to the repo, so the image is
-# reproducible without any external download.
+# Images:
+#   - eclipse-temurin:21-jdk (Java 21 build + runtime via Adoptium; Debian Bookworm
+#     ships only OpenJDK 17, which is too old for the project)
+#   - python:3.14-slim-bookworm as the runtime base, with Temurin JRE layered in.
 
 ARG PYTHON_VERSION=3.14-slim-bookworm
 ARG JAVA_VERSION=21
@@ -42,24 +44,12 @@ RUN gcc -O3 src/flashfold.c -o mcff -lm \
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Stage 2: compile RINexus Java classes with Maven
+# Base: eclipse-temurin:21-jdk (Adoptium, has Java 21 — Debian's OpenJDK is only 17)
 # Source: ./docker/build-context/rimap_java_code/  (pom.xml + src/)
-#
-# Maven dependencies (declared in the bundled pom.xml):
-#   - spring-boot-starter-web
-#   - spring-boot-starter-data-jpa
-#   - jackson-databind
-#   - commons-csv / commons-lang3 / commons-io / commons-codec
-#   - lombok (provided)
-#   - h2
-#   - slf4j-api
 # ──────────────────────────────────────────────────────────────────────────────
-FROM debian:bookworm-slim AS rinexus-build
-ARG JAVA_VERSION=21
+FROM eclipse-temurin:21-jdk AS rinexus-build
 RUN apt-get update \
- && apt-get install -y --no-install-recommends \
-        openjdk-${JAVA_VERSION}-jdk-headless \
-        maven \
-        ca-certificates \
+ && apt-get install -y --no-install-recommends maven ca-certificates \
  && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /build/rinexus
@@ -70,26 +60,17 @@ RUN mvn -B -q package -DskipTests \
 
 
 # ──────────────────────────────────────────────────────────────────────────────
-# Stage 3: runtime image — Python 3.14 + Java 21 + repo
+# Stage 3: runtime image
+# Base: python:3.14-slim-bookworm
+# Layered: Java 21 JRE (Temurin) on top of the Python base
 # ──────────────────────────────────────────────────────────────────────────────
-FROM python:${PYTHON_VERSION}
-ARG JAVA_VERSION=21
-ENV DEBIAN_FRONTEND=noninteractive
+FROM python:${PYTHON_VERSION} AS runtime
 
-# Java 21 for RINexus, build tools for legacy scripts, libgomp for HDBSCAN's
-# OpenMP runtime.
-RUN apt-get update \
- && apt-get install -y --no-install-recommends \
-        openjdk-${JAVA_VERSION}-jdk-headless \
-        git \
-        make \
-        gcc \
-        g++ \
-        libstdc++6 \
-        libgomp1 \
-        ca-certificates \
-        wget \
- && rm -rf /var/lib/apt/lists/*
+# Re-export from Temurin: JRE + jlink minimal runtime
+COPY --from=eclipse-temurin:21-jre /opt/java/openjdk /opt/java/openjdk
+ENV JAVA_HOME=/opt/java/openjdk \
+    PATH="/opt/java/openjdk/bin:${PATH}"
+
 
 WORKDIR /app
 

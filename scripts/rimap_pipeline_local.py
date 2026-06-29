@@ -28,8 +28,13 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 # Paths - use absolute paths
 SCRIPT_DIR = Path(__file__).parent.resolve()
 GENCODE_FASTA = str(SCRIPT_DIR / "gencode.v46.transcripts.fa.gz")
-MCFLASHFOLD_PATH = "/home/emeric/MC-Flashfold-v37.0"
-JAVA_CLASSPATH = str(SCRIPT_DIR / "rimap_java_code" / "target" / "classes")
+# Paths can be overridden via env vars (used by the Docker image to point at
+# the in-container locations); default to the host paths used during development.
+MCFLASHFOLD_PATH = os.environ.get("MCFLASHFOLD_PATH", "/home/emeric/MC-Flashfold-v37.0")
+JAVA_CLASSPATH = os.environ.get(
+    "JAVA_CLASSPATH",
+    str(SCRIPT_DIR / "rimap_java_code" / "target" / "classes"),
+)
 JACKSON_JARS = [
     f"{os.path.expanduser('~')}/.m2/repository/com/fasterxml/jackson/core/jackson-databind/2.15.3/jackson-databind-2.15.3.jar",
     f"{os.path.expanduser('~')}/.m2/repository/com/fasterxml/jackson/core/jackson-core/2.15.3/jackson-core-2.15.3.jar",
