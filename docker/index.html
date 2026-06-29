@@ -834,6 +834,45 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#the-binmirna-kras-cli" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The bin/mirna-kras CLI
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The bin/mirna-kras CLI">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#typical-third-party-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Typical third-party workflow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#running-a-one-off-script" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Running a one-off script
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#whats-bundled" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -845,10 +884,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#quick-start" class="md-nav__link">
+  <a href="#whats-required-at-runtime" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Quick start
+        What's required at runtime
       
     </span>
   </a>
@@ -956,6 +995,45 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#the-binmirna-kras-cli" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The bin/mirna-kras CLI
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The bin/mirna-kras CLI">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#typical-third-party-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Typical third-party workflow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#running-a-one-off-script" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Running a one-off script
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#whats-bundled" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -967,10 +1045,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#quick-start" class="md-nav__link">
+  <a href="#whats-required-at-runtime" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Quick start
+        What's required at runtime
       
     </span>
   </a>
@@ -1061,7 +1139,59 @@
 
 
 <h1 id="docker-running-the-full-pipeline-in-a-container">Docker — running the full pipeline in a container</h1>
-<p>The image builds everything from source at build time, so a single <code>docker build</code> is enough — no host setup required beyond Docker itself.</p>
+<p>The image builds everything from source at build time. A fresh third-party user only needs three commands:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>git<span class="w"> </span>clone<span class="w"> </span>&lt;repo-url&gt;<span class="w"> </span>mirna-kras
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nb">cd</span><span class="w"> </span>mirna-kras
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>./bin/mirna-kras<span class="w"> </span>build<span class="w">      </span><span class="c1"># ~5–10 min the first time</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>./bin/mirna-kras<span class="w"> </span>test-local<span class="w"> </span><span class="c1"># 3-pair smoke test (~15 s)</span>
+</code></pre></div>
+<p>The <code>bin/mirna-kras</code> CLI wraps every common Docker interaction (build, serve, shell, run, test, pipeline, clean) so the user does not have to remember the long <code>docker run -v ... -e ...</code> invocations.</p>
+<h2 id="the-binmirna-kras-cli">The <code>bin/mirna-kras</code> CLI</h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>mirna-kras [-h] &lt;subcommand&gt; ...
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>Subcommands:
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>  build      Build the Docker image
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>  serve      Start the mkdocs dev server at http://localhost:8000
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>  shell      Open an interactive shell inside the container
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>  test-local Run the local pipeline smoke test (3 pairs, new DB)
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>  test-api   Run the API smoke test (test_curl.py)
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>  run        Run any script from scripts/ inside the container
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>  pipeline   Run the full local pipeline (WARNING: takes hours)
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>  python     Open a Python REPL with the pipeline scripts on sys.path
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>  clean      Remove the Docker image and dangling build cache
+</code></pre></div>
+<p>Every subcommand accepts <code>--work DIR</code> (default <code>./work</code>) for the work directory mounted at <code>/tmp/work</code> in the container. Files written there are owned by the host user (the CLI runs Docker as <code>-u $(id -u):$(id -g)</code>).</p>
+<h3 id="typical-third-party-workflow">Typical third-party workflow</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># 1. Build the image (one-time, 5-10 min)</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>./bin/mirna-kras<span class="w"> </span>build
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="c1"># 2. Smoke-test the local pipeline (3 KRAS-201 pairs, new DB, no API)</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>./bin/mirna-kras<span class="w"> </span>test-local
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="c1"># → 48 sites in a new DB at ./work/rimap_results.duckdb</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="c1"># → Same counts as a manual run, no production DB touched</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="c1"># 3. Read the docs locally</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>./bin/mirna-kras<span class="w"> </span>serve<span class="w">    </span><span class="c1"># → http://localhost:8000</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="c1"># 4. Drop into a shell to run analysis scripts</span>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>./bin/mirna-kras<span class="w"> </span>shell<span class="w">    </span><span class="c1"># → bash inside the image, with scripts/ on sys.path</span>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="c1"># In the shell:</span>
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="c1">#   $ python /app/repo/scripts/nmf_analysis.py --output-dir /tmp/work/nmf</span>
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="c1"># 5. Clean up when done</span>
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>./bin/mirna-kras<span class="w"> </span>clean
+</code></pre></div>
+<h3 id="running-a-one-off-script">Running a one-off script</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>./bin/mirna-kras<span class="w"> </span>run<span class="w"> </span>nmf_analysis.py<span class="w"> </span>--output-dir<span class="w"> </span>/tmp/work/nmf<span class="w"> </span>--n-seeds<span class="w"> </span><span class="m">20</span>
+</code></pre></div>
+<p>This is equivalent to:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>-u<span class="w"> </span><span class="k">$(</span>id<span class="w"> </span>-u<span class="k">)</span>:<span class="k">$(</span>id<span class="w"> </span>-g<span class="k">)</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span>-v<span class="w"> </span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span>:/app/repo<span class="w"> </span>-v<span class="w"> </span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span>/work:/tmp/work<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">  </span>-e<span class="w"> </span><span class="nv">DB_PATH</span><span class="o">=</span>/tmp/work/rimap_results.duckdb<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">  </span>-e<span class="w"> </span><span class="nv">GENCODE_FASTA</span><span class="o">=</span>/tmp/work/gencode.v46.transcripts.fa.gz<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">  </span>-e<span class="w"> </span><span class="nv">JAVA_CLASSPATH</span><span class="o">=</span>/app/archive/rimap_java_code/target/classes:/opt/rinexus-deps/*<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">  </span>mirna-kras<span class="w"> </span>python3<span class="w"> </span>/app/repo/scripts/nmf_analysis.py<span class="w"> </span>--output-dir<span class="w"> </span>/tmp/work/nmf<span class="w"> </span>--n-seeds<span class="w"> </span><span class="m">20</span>
+</code></pre></div></p>
 <h2 id="whats-bundled">What's bundled</h2>
 <table>
 <thead>
@@ -1078,9 +1208,9 @@
 <td><code>pip install -r</code></td>
 </tr>
 <tr>
-<td>Java 21 (OpenJDK)</td>
-<td>upstream Debian packages</td>
-<td><code>apt-get</code></td>
+<td>Java 21 (Temurin)</td>
+<td><code>eclipse-temurin:21-jdk</code> (upstream Adoptium)</td>
+<td>base image</td>
 </tr>
 <tr>
 <td>MC-Flashfold (C)</td>
@@ -1089,39 +1219,23 @@
 </tr>
 <tr>
 <td>RINexus Java classes</td>
-<td><code>docker/build-context/rimap_java_code/</code> (1.2 MB, pom.xml + src/)</td>
-<td><code>mvn package</code></td>
+<td><code>docker/build-context/rimap_java_code/</code> (1.2 MB)</td>
+<td><code>mvn package</code> + <code>dependency:copy-dependencies</code></td>
+</tr>
+<tr>
+<td>miRBase miRNA file</td>
+<td><code>data/mirnas.fa</code> (205 KB)</td>
+<td><code>COPY</code></td>
 </tr>
 </tbody>
 </table>
-<p>The image is fully reproducible offline once the build context is in place. No internet is required at build time beyond the initial apt/pip downloads (which are cached in Docker layers).</p>
-<h2 id="quick-start">Quick start</h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nb">cd</span><span class="w"> </span>mirna-kras
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="c1"># Build the image (~5-10 min the first time)</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>docker<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>mirna-kras<span class="w"> </span>.
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="c1"># Run the docs site at http://localhost:8000</span>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>-p<span class="w"> </span><span class="m">8000</span>:8000<span class="w"> </span>mirna-kras
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="c1"># Drop into a bash shell inside the container, with a volume for outputs</span>
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>-it<span class="w"> </span>-v<span class="w"> </span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span>/work:/app/work<span class="w"> </span>mirna-kras<span class="w"> </span>bash
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="c1"># Build the static site</span>
-<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>-v<span class="w"> </span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span>/site:/app/site<span class="w"> </span>mirna-kras<span class="w"> </span>mkdocs<span class="w"> </span>build<span class="w"> </span>--strict
-<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>
-<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="c1"># Run the full pipeline (Stages 0 → 1 → 2)</span>
-<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>-v<span class="w"> </span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span>/work:/app/work<span class="w"> </span>mirna-kras<span class="w"> </span>bash<span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;</span>
-<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="s1">  set -euo pipefail</span>
-<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="s1">  cd /app/work</span>
-<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a><span class="s1">  python /app/scripts/fetch_gencode.py</span>
-<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a><span class="s1">  python /app/scripts/rimap_pipeline.py            # or rimap_pipeline_local.py</span>
-<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a><span class="s1">  for s in nmf_analysis transcript_clustering chord_diagram heatmap_by_cluster \</span>
-<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a><span class="s1">           bipartite_by_cluster bipartite_graph bipartite_top_heatmap mirna_interactive_plot; do</span>
-<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a><span class="s1">    python /app/scripts/$s.py || true</span>
-<a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a><span class="s1">  done</span>
-<a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a><span class="s1">&#39;</span>
+<p>The image is fully reproducible offline. The only network access is during <code>apt-get</code> / <code>pip install</code> for system deps; after the first build, subsequent runs use cached layers.</p>
+<h2 id="whats-required-at-runtime">What's required at runtime</h2>
+<p>The local pipeline (<code>rimap_pipeline_local.py</code>) needs the GENCODE v46 transcript archive. It's not bundled in the image (83 MB is too big). Provide it via the <code>--gencode</code> flag:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>./bin/mirna-kras<span class="w"> </span>pipeline<span class="w"> </span>--gencode<span class="w"> </span>/path/to/gencode.v46.transcripts.fa.gz<span class="w"> </span>--yes
 </code></pre></div>
+<p>Download it from <a href="https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_46/gencode.v46.transcripts.fa.gz">https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_46/gencode.v46.transcripts.fa.gz</a>.</p>
+<p>If you only want to use the API variant (<code>rimap_pipeline.py</code>, which queries RIMap-RISC over HTTPS), no GENCODE archive is needed.</p>
 <h2 id="what-works-inside-the-image">What works inside the image</h2>
 <table>
 <thead>
@@ -1140,7 +1254,7 @@
 <tr>
 <td>0</td>
 <td><code>scripts/extract_transcripts.py</code></td>
-<td>needs the GENCODE archive as a local file (drop in <code>/app/work</code>)</td>
+<td>needs the GENCODE archive as a local file (drop in <code>/tmp/work</code>)</td>
 </tr>
 <tr>
 <td>1</td>
@@ -1155,7 +1269,7 @@
 <tr>
 <td>2</td>
 <td><code>transcript_clustering.py</code>, <code>nmf_analysis.py</code>, …</td>
-<td>reads the DuckDB at <code>/app/work/rimap_results.duckdb</code> if mounted</td>
+<td>reads the DuckDB at <code>/tmp/work/rimap_results.duckdb</code> if mounted</td>
 </tr>
 <tr>
 <td>—</td>
@@ -1175,8 +1289,8 @@
 </thead>
 <tbody>
 <tr>
-<td><code>$(pwd)/work</code></td>
-<td><code>/app/work</code></td>
+<td><code>$(pwd)/work</code> (or <code>--work DIR</code>)</td>
+<td><code>/tmp/work</code></td>
 <td>Drop generated <code>.duckdb</code>, <code>figures/</code>, <code>figures_nmf/</code> here between container runs</td>
 </tr>
 <tr>
@@ -1187,12 +1301,16 @@
 <tr>
 <td><code>(none)</code></td>
 <td><code>/app/archive/rimap_java_code/target/classes/</code></td>
-<td>RINexus Java classes — already inside the image</td>
+<td>RINexus Java classes + Jackson + friends — already inside the image</td>
+</tr>
+<tr>
+<td><code>--gencode PATH</code></td>
+<td><code>/tmp/work/gencode.v46.transcripts.fa.gz</code></td>
+<td>GENCODE v46 transcript archive (mount the host file)</td>
 </tr>
 </tbody>
 </table>
 <h2 id="image-size">Image size</h2>
-<p>Approximate, after a clean build:</p>
 <table>
 <thead>
 <tr>
@@ -1206,8 +1324,8 @@
 <td>~150 MB</td>
 </tr>
 <tr>
-<td><code>openjdk-21-jdk-headless</code></td>
-<td>~250 MB</td>
+<td><code>openjdk-21-jre-headless</code> (from Temurin)</td>
+<td>~50 MB</td>
 </tr>
 <tr>
 <td><code>maven</code> (Stage 2 build only — discarded)</td>
@@ -1247,7 +1365,7 @@
 </tr>
 <tr>
 <td><code>JAVA_CLASSPATH</code></td>
-<td><code>/app/archive/rimap_java_code/target/classes</code></td>
+<td><code>/app/archive/rimap_java_code/target/classes:/opt/rinexus-deps/*</code></td>
 </tr>
 <tr>
 <td><code>PATH</code></td>
@@ -1275,13 +1393,20 @@
 <td>when you push a fix upstream</td>
 <td>pull the new source into <code>docker/build-context/rimap_java_code/</code>, commit, rebuild</td>
 </tr>
+<tr>
+<td><code>data/mirnas.fa</code></td>
+<td>when miRBase updates</td>
+<td>replace the file in the repo, commit, rebuild</td>
+</tr>
 </tbody>
 </table>
 <h2 id="troubleshooting">Troubleshooting</h2>
 <ul>
 <li><strong><code>mcff not found</code> inside the container</strong> — the MC-Flashfold C build failed silently. Check <code>docker build -t mirna-kras .</code> output for gcc errors.</li>
-<li><strong><code>ClassNotFoundException</code> for <code>ca.iric.major.rinexus.rimaprisc.MiRScanS</code></strong> — the Maven build failed. Run <code>docker build --progress=plain</code> to see Maven logs.</li>
-<li><strong><code>mkdocs serve</code> exits immediately</strong> — you forgot to publish the port: <code>docker run --rm -p 8000:8000 mirna-kras</code>.</li>
+<li><strong><code>ClassNotFoundException: com.fasterxml.jackson.databind.ObjectMapper</code></strong> — the Maven build didn't extract Jackson deps. Re-run <code>./bin/mirna-kras build</code> and look for "RINexus deps: N jars" in the build log.</li>
+<li><strong><code>mkdocs serve</code> exits immediately</strong> — you forgot to publish the port: <code>./bin/mirna-kras serve</code> already does <code>-p 8000:8000</code>.</li>
+<li><strong><code>Permission denied</code> writing to <code>./work/</code></strong> — a previous run created the dir as root. <code>sudo chown -R $(id -u):$(id -g) ./work</code> to fix.</li>
+<li><strong>GENCODE archive not found</strong> — the CLI prints a clear error with the download URL. Pass <code>--gencode PATH</code> to override the default.</li>
 </ul>
 
 

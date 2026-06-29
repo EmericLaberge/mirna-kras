@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 540" width="760" height="540" font-family="Charter, Georgia, serif">
-  <title>Data flow du pipeline miRNA-KRas</title>
+  <title>Data flow of the mirna-kras pipeline</title>
 
   <defs>
     <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
@@ -8,29 +8,29 @@
     </marker>
   </defs>
 
-  <!-- Phase 0: Données -->
+  <!-- Stage 0: Data -->
   <g transform="translate(20, 30)">
     <rect x="0" y="0" width="160" height="80" rx="6" fill="#faf9f5" stroke="#1B365D" stroke-width="1.5"/>
-    <text x="80" y="20" text-anchor="middle" font-size="11" font-weight="600" fill="#1B365D">Phase 0 — Données</text>
+    <text x="80" y="20" text-anchor="middle" font-size="11" font-weight="600" fill="#1B365D">Stage 0 — Data</text>
     <text x="80" y="42" text-anchor="middle" font-size="9" fill="#3d3d3a">data/mirnas.fa</text>
     <text x="80" y="58" text-anchor="middle" font-size="9" fill="#3d3d3a">+</text>
     <text x="80" y="72" text-anchor="middle" font-size="9" fill="#3d3d3a">data/fasta/*.fasta</text>
   </g>
 
-  <!-- Arrow Phase 0 → Phase 1 -->
+  <!-- Arrow Stage 0 → Stage 1 -->
   <line x1="180" y1="70" x2="220" y2="70" stroke="#3d3d3a" stroke-width="1" marker-end="url(#arrow)"/>
   <text x="200" y="62" text-anchor="middle" font-size="8" fill="#6b6a64">FASTA</text>
 
-  <!-- Phase 1: Calcul -->
+  <!-- Stage 1: Compute -->
   <g transform="translate(220, 30)">
     <rect x="0" y="0" width="180" height="80" rx="6" fill="#faf9f5" stroke="#1B365D" stroke-width="1.5"/>
-    <text x="90" y="20" text-anchor="middle" font-size="11" font-weight="600" fill="#1B365D">Phase 1 — Calcul</text>
+    <text x="90" y="20" text-anchor="middle" font-size="11" font-weight="600" fill="#1B365D">Stage 1 — Compute</text>
     <text x="90" y="42" text-anchor="middle" font-size="9" fill="#3d3d3a">rimap_pipeline.py</text>
-    <text x="90" y="58" text-anchor="middle" font-size="8" fill="#6b6a64">ou rimap_pipeline_local.py</text>
-    <text x="90" y="72" text-anchor="middle" font-size="8" fill="#6b6a64">~heures · ~1.2 M lignes</text>
+    <text x="90" y="58" text-anchor="middle" font-size="8" fill="#6b6a64">or rimap_pipeline_local.py</text>
+    <text x="90" y="72" text-anchor="middle" font-size="8" fill="#6b6a64">~hours · ~1.2 M rows</text>
   </g>
 
-  <!-- Arrow Phase 1 → DuckDB -->
+  <!-- Arrow Stage 1 → DuckDB -->
   <line x1="400" y1="70" x2="440" y2="70" stroke="#3d3d3a" stroke-width="1" marker-end="url(#arrow)"/>
   <text x="420" y="62" text-anchor="middle" font-size="8" fill="#6b6a64">INSERT</text>
 
@@ -38,22 +38,22 @@
   <g transform="translate(440, 20)">
     <rect x="0" y="0" width="180" height="100" rx="6" fill="#E4ECF5" stroke="#1B365D" stroke-width="2"/>
     <text x="90" y="22" text-anchor="middle" font-size="11" font-weight="600" fill="#1B365D">rimap_results.duckdb</text>
-    <text x="90" y="40" text-anchor="middle" font-size="8" font-style="italic" fill="#6b6a64">source de vérité unique</text>
+    <text x="90" y="40" text-anchor="middle" font-size="8" font-style="italic" fill="#6b6a64">single source of truth</text>
     <line x1="20" y1="50" x2="160" y2="50" stroke="#e8e6dc" stroke-width="0.5"/>
     <text x="90" y="64" text-anchor="middle" font-size="9" fill="#3d3d3a">transcripts (25)</text>
     <text x="90" y="76" text-anchor="middle" font-size="9" fill="#3d3d3a">mirnas (2 588)</text>
     <text x="90" y="88" text-anchor="middle" font-size="9" fill="#3d3d3a">results (1 208 803)</text>
   </g>
 
-  <!-- Arrow DuckDB → Phase 2 -->
+  <!-- Arrow DuckDB → Stage 2 -->
   <line x1="440" y1="160" x2="400" y2="200" stroke="#3d3d3a" stroke-width="1" marker-end="url(#arrow)"/>
   <text x="455" y="190" text-anchor="middle" font-size="8" fill="#6b6a64">SQL</text>
   <text x="455" y="202" text-anchor="middle" font-size="8" fill="#6b6a64">read_only</text>
 
-  <!-- Phase 2: Analyses -->
+  <!-- Stage 2: Analyses -->
   <g transform="translate(20, 200)">
     <rect x="0" y="0" width="380" height="50" rx="6" fill="#faf9f5" stroke="#1B365D" stroke-width="1.5"/>
-    <text x="190" y="20" text-anchor="middle" font-size="11" font-weight="600" fill="#1B365D">Phase 2 — Analyses</text>
+    <text x="190" y="20" text-anchor="middle" font-size="11" font-weight="600" fill="#1B365D">Stage 2 — Analyses</text>
     <text x="190" y="38" text-anchor="middle" font-size="9" fill="#3d3d3a">transcript_clustering · nmf_analysis · chord · bipartite · heatmap · interactive_plot</text>
   </g>
 
@@ -74,16 +74,16 @@
 
   <g transform="translate(280, 270)">
     <rect x="0" y="0" width="120" height="60" rx="6" fill="#faf9f5" stroke="#3d3d3a" stroke-width="1"/>
-    <text x="60" y="22" text-anchor="middle" font-size="9" font-weight="500" fill="#3d3d3a">Visualisations</text>
+    <text x="60" y="22" text-anchor="middle" font-size="9" font-weight="500" fill="#3d3d3a">Visualizations</text>
     <text x="60" y="40" text-anchor="middle" font-size="8" fill="#6b6a64">figures/</text>
     <text x="60" y="52" text-anchor="middle" font-size="8" fill="#6b6a64">+ viz/index.html</text>
   </g>
 
-  <!-- Arrows from Phase 2 to outputs -->
+  <!-- Arrows from Stage 2 to outputs -->
   <line x1="80" y1="250" x2="80" y2="270" stroke="#3d3d3a" stroke-width="1" marker-end="url(#arrow)"/>
   <line x1="210" y1="250" x2="210" y2="270" stroke="#3d3d3a" stroke-width="1" marker-end="url(#arrow)"/>
   <line x1="340" y1="250" x2="340" y2="270" stroke="#3d3d3a" stroke-width="1" marker-end="url(#arrow)"/>
 
   <!-- Caption -->
-  <text x="380" y="490" text-anchor="middle" font-size="9" fill="#6b6a64">Le DuckDB isole les phases et empêche les scripts d'analyse de muter les résultats.</text>
+  <text x="380" y="490" text-anchor="middle" font-size="9" fill="#6b6a64">DuckDB isolates the stages and prevents the analysis scripts from mutating the data.</text>
 </svg>

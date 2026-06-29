@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 580 280" width="580" height="280" font-family="Charter, Georgia, serif">
-  <title>Architecture en couches</title>
+  <title>Layered architecture</title>
 
   <defs>
     <linearGradient id="couche-data" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -9,34 +9,34 @@
     </linearGradient>
   </defs>
 
-  <!-- Layer 1: Données -->
+  <!-- Layer 1: Data -->
   <g transform="translate(20, 20)">
     <rect x="0" y="0" width="540" height="50" rx="6" fill="url(#couche-data)" stroke="#1B365D" stroke-width="1.5"/>
-    <text x="20" y="22" font-size="12" font-weight="600" fill="#1B365D">Couche données</text>
-    <text x="20" y="40" font-size="10" fill="#3d3d3a">Séquences FASTA  ·  DuckDB rimap_results.duckdb</text>
-    <text x="520" y="32" text-anchor="end" font-size="9" fill="#6b6a64">gitignored · 214 Mo</text>
+    <text x="20" y="22" font-size="12" font-weight="600" fill="#1B365D">Data layer</text>
+    <text x="20" y="40" font-size="10" fill="#3d3d3a">FASTA sequences  ·  DuckDB rimap_results.duckdb</text>
+    <text x="520" y="32" text-anchor="end" font-size="9" fill="#6b6a64">gitignored · 214 MB</text>
   </g>
 
-  <!-- Layer 2: Calcul -->
+  <!-- Layer 2: Compute -->
   <g transform="translate(20, 80)">
     <rect x="0" y="0" width="540" height="50" rx="6" fill="#faf9f5" stroke="#3d3d3a" stroke-width="1"/>
-    <text x="20" y="22" font-size="12" font-weight="600" fill="#3d3d3a">Couche calcul</text>
+    <text x="20" y="22" font-size="12" font-weight="600" fill="#3d3d3a">Compute layer</text>
     <text x="20" y="40" font-size="10" fill="#3d3d3a">rimap_pipeline.py  ·  rimap_pipeline_local.py</text>
-    <text x="520" y="32" text-anchor="end" font-size="9" fill="#6b6a64">~heures</text>
+    <text x="520" y="32" text-anchor="end" font-size="9" fill="#6b6a64">~hours</text>
   </g>
 
-  <!-- Layer 3: Analyse -->
+  <!-- Layer 3: Analysis -->
   <g transform="translate(20, 140)">
     <rect x="0" y="0" width="540" height="50" rx="6" fill="#faf9f5" stroke="#3d3d3a" stroke-width="1"/>
-    <text x="20" y="22" font-size="12" font-weight="600" fill="#3d3d3a">Couche analyse</text>
+    <text x="20" y="22" font-size="12" font-weight="600" fill="#3d3d3a">Analysis layer</text>
     <text x="20" y="40" font-size="10" fill="#3d3d3a">clustering (Leiden/Spectral/GN)  ·  NMF  ·  viz (chord, bipartite, heatmap, interactive)</text>
-    <text x="520" y="32" text-anchor="end" font-size="9" fill="#6b6a64">~secondes–minutes</text>
+    <text x="520" y="32" text-anchor="end" font-size="9" fill="#6b6a64">~seconds–minutes</text>
   </g>
 
-  <!-- Layer 4: Sortie -->
+  <!-- Layer 4: Output -->
   <g transform="translate(20, 200)">
     <rect x="0" y="0" width="540" height="50" rx="6" fill="#faf9f5" stroke="#3d3d3a" stroke-width="1"/>
-    <text x="20" y="22" font-size="12" font-weight="600" fill="#3d3d3a">Couche sortie</text>
+    <text x="20" y="22" font-size="12" font-weight="600" fill="#3d3d3a">Output layer</text>
     <text x="20" y="40" font-size="10" fill="#3d3d3a">figures/  ·  figures_nmf/  ·  viz/index.html  ·  W_matrix.npy, H_matrix.npy</text>
   </g>
 
