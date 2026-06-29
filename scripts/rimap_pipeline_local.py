@@ -27,7 +27,12 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # Paths - use absolute paths
 SCRIPT_DIR = Path(__file__).parent.resolve()
-GENCODE_FASTA = str(SCRIPT_DIR / "gencode.v46.transcripts.fa.gz")
+# Override via env var (used by the Docker image to point at the in-container
+# GENCODE archive path); default to a sibling of the script for host runs.
+GENCODE_FASTA = os.environ.get(
+    "GENCODE_FASTA",
+    str(SCRIPT_DIR / "gencode.v46.transcripts.fa.gz"),
+)
 # Paths can be overridden via env vars (used by the Docker image to point at
 # the in-container locations); default to the host paths used during development.
 MCFLASHFOLD_PATH = os.environ.get("MCFLASHFOLD_PATH", "/home/emeric/MC-Flashfold-v37.0")
@@ -124,7 +129,8 @@ def run_mirscan(transcript_name, transcript_id, mirna_id, mirna_name, mirna_seq,
             capture_output=True,
             text=True,
             timeout=120,
-            env=env
+            env=env,
+            cwd=MCFLASHFOLD_PATH,  # mcff looks for its tables/ in CWD
         )
 
         if result.returncode != 0:

@@ -56,7 +56,12 @@ WORKDIR /build/rinexus
 COPY docker/build-context/rimap_java_code/ ./
 RUN mvn -B -q package -DskipTests \
  && cp -r target/classes /build/rinexus-classes \
- && find /build/rinexus-classes -name '*.class' | wc -l | xargs -I{} echo "RINexus: {} classes compiled"
+ && find /build/rinexus-classes -name '*.class' | wc -l | xargs -I{} echo "RINexus: {} classes compiled" \
+# Also extract the runtime deps (jackson, commons-*, etc.) that MiRScanS needs
+# at runtime. Without this, the Java process dies with NoClassDefFoundError
+# on the first JSON parse.
+ && mvn -B -q dependency:copy-dependencies -DincludeScope=runtime -DoutputDirectory=/build/rinexus-deps \
+ && find /build/rinexus-deps -name "*.jar" | wc -l | xargs -I{} echo "RINexus deps: {} jars"
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -90,7 +95,12 @@ ENV MCFLASHFOLD_PATH=/opt/MC-Flashfold
 
 # RINexus Java classes (from Stage 2)
 COPY --from=rinexus-build /build/rinexus-classes/ /app/archive/rimap_java_code/target/classes/
-ENV JAVA_CLASSPATH=/app/archive/rimap_java_code/target/classes
+
+# Runtime deps for MiRScanS (jackson, commons-*, etc.) — produced by
+# mvn dependency:copy-dependencies in Stage 2.
+COPY --from=rinexus-build /build/rinexus-deps/ /opt/rinexus-deps/
+
+ENV JAVA_CLASSPATH=/app/archive/rimap_java_code/target/classes:/opt/rinexus-deps/*
 
 
 # Repo contents
