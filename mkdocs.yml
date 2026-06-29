@@ -1,5 +1,5 @@
 site_name: mirna-kras
-site_description: Pipeline de classification de miRNA par profil d'affinité aux transcrits KRas
+site_description: miRNA binding profile clustering against the KRas network (NMF + graph clustering)
 
 
 docs_dir: docs
@@ -73,17 +73,17 @@ plugins:
             # Per-group pages will use ::: scripts.module syntax
 
 nav:
-  - Accueil: index.md
-  - Mise en route: getting-started.md
+  - Home: index.md
+  - Getting started: getting-started.md
   - Architecture: architecture.md
-  - Modèle de données: data-model.md
+  - Data model: data-model.md
   - API reference:
-      - Vue d'ensemble: reference/index.md
-      - Données (génération): reference/data.md
-      - Calcul (rimap): reference/rimap.md
-      - Clustering graphe: reference/clustering.md
+      - Overview: reference/index.md
+      - Data (generation): reference/data.md
+      - Rimap computation: reference/rimap.md
+      - Graph clustering: reference/clustering.md
       - NMF: reference/nmf.md
-      - Visualisations: reference/viz.md
-      - Utilitaires: reference/utilities.md
-  - Extensions: extension.md
+      - Visualizations: reference/viz.md
+      - Utilities: reference/utilities.md
+  - Extension points: extension.md
   - Docker: docker.md
