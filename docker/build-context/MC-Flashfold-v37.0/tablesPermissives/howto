@@ -1,0 +1,4 @@
+Les energies de tous les NCM dans le fichier energies.f2.csv sont changees de Inf a 1e6 de maniere a permettre leurs constructions dans tous les cas. 
+Les energies de toutes les junctions dans le fichier junctions.f2.csv sont changees de Inf a 2.0 pour la meme raison
+2017-aout-30
+Paul Dallaire

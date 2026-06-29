@@ -86,3 +86,4 @@ nav:
       - Visualisations: reference/viz.md
       - Utilitaires: reference/utilities.md
   - Extensions: extension.md
+  - Docker: docker.md

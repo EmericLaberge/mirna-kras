@@ -38,3 +38,7 @@ archive/
 
 site/
 .mkdocs_build_cache/
+# Backup / autosave / merge conflict files
+*.java~
+*~
+#*#
