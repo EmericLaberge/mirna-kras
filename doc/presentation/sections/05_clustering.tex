@@ -1,0 +1,80 @@
+\section{Méthodes de classification}
+
+\begin{frame}{Approche double}
+
+\begin{columns}
+\begin{column}{0.48\textwidth}
+\textbf{Clustering classique}
+
+\vspace{1em}
+\begin{center}
+\begin{tikzpicture}[
+  box/.style={draw, rounded corners=4pt, minimum width=2.2cm, minimum height=0.7cm,
+              align=center, font=\tiny, thick},
+  arr/.style={-{Stealth[length=3pt]}, thick, color=pipeGray},
+  scale=0.7, transform shape
+]
+  \node[box, fill=pipeBlue!10, draw=pipeBlue!50] (feat) at (0, 0)
+    {\textbf{Matrice 2516×25}\\moy |dG|};
+
+  \node[box, fill=pipeOrange!10, draw=pipeOrange!50] (cos) at (3, 0)
+    {\textbf{Cosine similarity}\\k-NN graph};
+
+  \node[box, fill=pipeGreen!10, draw=pipeGreen!50] (clust) at (6, 0)
+    {\textbf{Leiden / Spectral / GN}\\classification};
+
+  \draw[arr] (feat) -- node[above, font=\tiny] {} (cos);
+  \draw[arr] (cos) -- node[above, font=\tiny] {} (clust);
+\end{tikzpicture}
+\end{center}
+
+\vspace{0.5em}
+\small
+Clustering spectral (k fixe) et Girvan-Newman (edge-betweenness).
+\end{column}
+
+\begin{column}{0.48\textwidth}
+\textbf{Décomposition matricielle (NMF)}
+
+\vspace{1em}
+\begin{center}
+\begin{tikzpicture}[
+  box/.style={draw, rounded corners=4pt, minimum width=2.2cm, minimum height=0.7cm,
+              align=center, font=\tiny, thick},
+  arr/.style={-{Stealth[length=3pt]}, thick, color=pipeGray},
+  scale=0.7, transform shape
+]
+  \node[box, fill=pipeBlue!10, draw=pipeBlue!50] (feat) at (0, 0)
+    {\textbf{Matrice 2516×25}\\moy |dG|};
+
+  \node[box, fill=pipeOrange!10, draw=pipeOrange!50] (res) at (3, 0)
+    {\textbf{Résidus}\\V - col\_mean, clip+};
+
+  \node[box, fill=pipePurple!10, draw=pipePurple!50] (nmf) at (6, 0)
+    {\textbf{NMF}\\$V \approx WH$};
+
+  \draw[arr] (feat) -- node[above, font=\tiny] {} (res);
+  \draw[arr] (res) -- node[above, font=\tiny] {} (nmf);
+\end{tikzpicture}
+\end{center}
+
+\vspace{0.5em}
+\small
+Soft membership : chaque miRNA a un score par signature.
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Grid search}
+
+\begin{block}{Paramètres testés}
+\begin{itemize}
+  \item \textbf{Power} : 1 (linéaire), 2 (quadratique), 3 (cubique) — poids = $\lvert$dG$\rvert^p$
+  \item \textbf{Dimensions UMAP} : 2, 3, 4, 5
+  \item \textbf{Résolution Leiden} : balayée pour maximiser silhouette + modularité
+\end{itemize}
+\end{block}
+
+\vspace{0.5em}
+\textbf{Résultat optimal} : power = 1, dimensions = 2 (résultats stables, meilleur ratio qualité/complexité).
+\end{frame}

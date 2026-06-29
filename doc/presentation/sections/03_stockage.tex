@@ -1,0 +1,37 @@
+\section{Intégration de RIMap à un pipeline}
+
+\begin{frame}{Pipeline de collecte}
+
+\begin{center}
+\begin{tikzpicture}[
+  box/.style={draw, rounded corners=6pt, minimum width=2.8cm, minimum height=1.1cm,
+              align=center, font=\small, thick},
+  arr/.style={-{Stealth[length=5pt]}, thick, color=pipeGray},
+  scale=0.7, transform shape
+]
+  \node[box, fill=pipeBlue!10, draw=pipeBlue!50] (pairs) at (0, 0)
+    {\textbf{Paires}\\25 transcrits\\$\times$ 2\,516 miRNAs};
+
+  \node[box, fill=pipeOrange!10, draw=pipeOrange!50] (rimap) at (4.8, 0)
+    {\textbf{RIMap-RISC}\\prédiction};
+
+  \node[box, fill=pipeGreen!10, draw=pipeGreen!50] (parse) at (9.6, 0)
+    {\textbf{Parsing}\\du output};
+
+  \node[box, fill=pipePurple!10, draw=pipePurple!50] (db) at (14.4, 0)
+    {\textbf{DuckDB}\\1,2M interactions};
+
+  \draw[arr] (pairs) -- node[above, font=\scriptsize] {62\,900 paires} (rimap);
+  \draw[arr] (rimap) -- node[above, font=\scriptsize, text width=2.8cm, align=center]
+    {$\Delta G$, $K_d$, seed,\\position, bridge} (parse);
+  \draw[arr] (parse) -- node[above, font=\scriptsize] {remplissage} (db);
+\end{tikzpicture}
+\end{center}
+
+\vspace{0.5em}
+\begin{itemize}
+	\item On génère toutes les paires transcrit $\times$ miRNA $\Rightarrow$ 62\,900 paires.
+	\item RIMap-RISC retourne les sites de liaison pour chaque paire.
+	\item On parse le output et on stocke dans DuckDB $\Rightarrow$ \textbf{1\,208\,803 interactions}.
+\end{itemize}
+\end{frame}

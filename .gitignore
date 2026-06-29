@@ -1,0 +1,40 @@
+# Data (too large for git)
+*.duckdb
+*.duckdb.wal
+
+# Reference sequences
+*.fa.gz
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.npy
+.venv/
+
+# LaTeX auxiliaries
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.nav
+*.out
+*.synctex.gz
+*.toc
+*.xdv
+*.snm
+*.vrb
+*.bbl
+*.blg
+*.bcf
+*.run.xml
+*.spl
+
+# Build artifacts
+archive/
+
+# Sisyphus agent
+.sisyphus/
+
+site/
+.mkdocs_build_cache/

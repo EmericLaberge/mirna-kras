@@ -1,0 +1,88 @@
+site_name: mirna-kras
+site_description: Pipeline de classification de miRNA par profil d'affinité aux transcrits KRas
+
+
+docs_dir: docs
+site_dir: site
+
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.index
+    - navigation.top
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.code.annotate
+    - toc.follow
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Mode sombre
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Mode clair
+  icon:
+    repo: fontawesome/brands/github
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+
+plugins:
+  - search
+  - autorefs
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          paths: [.]
+          options:
+            docstring_style: google
+            show_source: true
+            show_root_heading: true
+            show_root_full_path: false
+            show_signature_annotations: true
+            show_symbol_type_heading: true
+            show_symbol_type_toc: true
+            members_order: source
+            separate_signature: true
+            docstring_section_style: table
+            merge_init_into_class: false
+            filters: ["!^_"]
+            # Per-group pages will use ::: scripts.module syntax
+
+nav:
+  - Accueil: index.md
+  - Mise en route: getting-started.md
+  - Architecture: architecture.md
+  - Modèle de données: data-model.md
+  - API reference:
+      - Vue d'ensemble: reference/index.md
+      - Données (génération): reference/data.md
+      - Calcul (rimap): reference/rimap.md
+      - Clustering graphe: reference/clustering.md
+      - NMF: reference/nmf.md
+      - Visualisations: reference/viz.md
+      - Utilitaires: reference/utilities.md
+  - Extensions: extension.md

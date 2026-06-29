@@ -1,0 +1,70 @@
+\section{RIMap-RISC}
+
+\begin{frame}{RIMap-RISC : idée clé}
+  \vspace{2cm}
+\begin{center}
+\begin{minipage}{0.85\textwidth}
+\begin{itemize}
+	\item Outil de \textbf{prédiction transcriptome-wide} des interactions miRNA--transcrit.
+	\item Développé par le laboratoire de \textbf{François Major} à l'IRIC.
+	\item Modélise l'\textbf{architecture bipartite du complexe RISC}
+	      (région seed + région supplémentaire + pont flexible).
+\end{itemize}
+\end{minipage}
+\end{center}
+\vfill
+\scriptsize Chasles S, Gaillard-Duchassin Z, Quenneville J, Lemaire M, Gagnon E, Major F. RIMap-RISC: a transcriptome-wide database of structurally modeled human microRNA interactions. \textit{Genome Biology} 27, 112 (2026). \url{https://doi.org/10.1186/s13059-026-04008-y}
+\end{frame}
+
+\begin{frame}{Architecture bipartite de RISC}
+\molochset{block=fill}
+\begin{columns}[T, onlytextwidth]
+	\column{0.55\textwidth}
+	\begin{block}{Modèle RIMap-RISC}
+		\begin{itemize}
+			\item \textbf{Seed} (g2--g8) : au moins 4 paires Watson-Crick contiguës.
+			\item \textbf{Pont} (g9--g12) : région flexible entre les deux domaines.
+			\item \textbf{Supplémentaire} (g13--g17) : appariement additionnel optionnel.
+		\end{itemize}
+	\end{block}
+
+	\column{0.40\textwidth}
+	\vspace{0.5em}
+	\begin{itemize}
+		\item Supporte les \textbf{appariements non-canoniques} : mésappariements, wobble, bulges.
+		\item Prédiction de structure : \textbf{MC-Flashfold}.
+		\item Énergie libre $\Delta G$ et $K_d$ estimés à partir de données cinétiques (RNA Bind-n-Seq).
+	\end{itemize}
+\end{columns}
+\vfill
+\scriptsize Dallaire P, Major F. MC-Flashfold: a fast RNA secondary structure prediction engine using a probabilistic helix-based model. \textit{Methods Mol Biol} 1490:237--51 (2016). \url{https://doi.org/10.1007/978-1-4939-6433-8_15}
+\end{frame}
+
+\begin{frame}{RIMap-RISC : entrées et sorties}
+\begin{columns}[T, onlytextwidth]
+	\column{0.45\textwidth}
+	\begin{block}{Entrée}
+		Une paire \textbf{(transcrit, miRNA)} :
+		\begin{itemize}
+			\item Séquence du transcrit (région CDS / 3'UTR)
+			\item Séquence du miRNA mature
+		\end{itemize}
+	\end{block}
+
+	\column{0.50\textwidth}
+	\begin{block}{Sortie : sites de liaison}
+		Pour chaque site trouvé :
+		\begin{itemize}
+			\item Position sur le transcrit
+			\item Type de seed (6mer, 7mer-m8, \ldots)
+			\item $\Delta G$ (énergie libre)
+			\item $K_d$ (constante de dissociation)
+			\item Bridge, appariements
+		\end{itemize}
+	\end{block}
+\end{columns}
+
+\vspace{0.5em}
+\centering
+\small Une paire peut avoir \textbf{plusieurs sites de liaison}.
+\end{frame}

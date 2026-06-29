@@ -1,0 +1,81 @@
+\section{Résultats}
+
+\begin{frame}{Comparaison des méthodes de clustering}
+\begin{table}
+\centering
+\small
+\begin{tabular}{@{} lcccc @{}}
+  \toprule
+  \textbf{Méthode} & \textbf{$k$} & \textbf{Silhouette} & \textbf{Modularité} & \textbf{Notes} \\
+  \midrule
+  Leiden (res=0.5) & 7 & 0.496 & 0.450 & \textbf{Meilleur} \\
+  Spectral (k=3) & 3 & 0.413 & 0.399 & k fixe \\
+  Girvan-Newman & 1 & — & — & Échec (graphe trop dense) \\
+  \bottomrule
+\end{tabular}
+\end{table}
+
+\vspace{0.5em}
+Girvan-Newman ne produit qu'un seul cluster — 3.16M d'arêtes, toutes les miRNAs partagent des transcrits.
+\end{frame}
+
+\begin{frame}{NMF — Sélection du rang}
+\begin{itemize}
+  \item Rang testé : $k = 2, 3, \dots, 25$ (maximum = 25 features)
+  \item Critère : corrélation cophénétique
+  \item \textbf{Rang optimal} : $k = 2$ (cophénétique = 0.9795)
+\end{itemize}
+
+\vspace{0.5em}
+% TODO: insérer figures/rank_selection.png
+\vspace{0.5em}
+Plus $k$ augmente, plus la stabilité diminue — $k=2$ offre le meilleur compromis.
+\end{frame}
+
+\begin{frame}{NMF — Signatures $k=2$}
+\begin{columns}
+\begin{column}{0.5\textwidth}
+\begin{block}{Signature 1 — RAS-MAPK}
+\begin{itemize}
+  \small
+  \item 1\,524 miRNAs (60.6\%)
+  \item Top transcrits : KRAS (6.21), PIK3CB (5.11), NRAS (3.98)
+\end{itemize}
+\end{block}
+\end{column}
+
+\begin{column}{0.5\textwidth}
+\begin{block}{Signature 2 — PI3K-AKT}
+\begin{itemize}
+  \small
+  \item 992 miRNAs (39.4\%)
+  \item Top transcrits : PIK3CA (8.26), HRAS (5.55)
+\end{itemize}
+\end{block}
+\end{column}
+\end{columns}
+
+\vspace{1em}
+MiRNAs mixtes (entropie > 0.8) : 1\,272 (50.6\%) — forte ambiguïté de ciblage.
+\end{frame}
+
+\begin{frame}{Comparaison clustering vs NMF}
+\begin{table}
+\centering
+\scriptsize
+\begin{tabular}{@{} lcccccc @{}}
+  \toprule
+  \textbf{Méthode} & \textbf{$k$} & \textbf{Silhouette} & \textbf{Mod.} & \textbf{Interprétabilité} \\
+  \midrule
+  Leiden & 7 & 0.496 & 0.450 & Profiles par cluster \\
+  Spectral & 3 & 0.413 & 0.399 & Très simple \\
+  GN & 1 & — & — & Échec \\
+  NMF $k=2$ & 2 & — & — & Signatures biologiques claires \\
+  \bottomrule
+\end{tabular}
+\end{table}
+
+\vspace{0.5em}
+\small
+NMF $k=2$ identifie deux programmes transcriptionnels distincts (RAS-MAPK vs PI3K-AKT) avec une interprétabilité biologique directe.
+\end{frame}

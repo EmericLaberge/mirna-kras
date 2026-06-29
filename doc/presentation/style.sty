@@ -1,0 +1,106 @@
+% Thème
+\usetheme{moloch}
+
+% Langue et typographie
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage{microtype}
+
+% Maths / tableaux / figures
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{texshade}
+\usepackage{twemojis}
+\usepackage{listings}
+\usepackage[scaled=0.85]{FiraMono}
+\usepackage{lstfiracode}
+\usepackage{pifont}    % Pour les symboles standard
+\usepackage{amssymb}   % Alternative pour \checkmark
+\usepackage{fontawesome5}
+\usepackage{stackengine} % Required for layering
+
+\newcommand{\ttt}[1]{\texttt{#1}}
+
+
+\setbeamercolor{example text}{fg=green!60!black}
+\setbeamercolor{alerted text}{fg=red!60!black}
+\setbeamercolor{warning text}{fg=orange!50!yellow}
+\definecolor{commentgray}{rgb}{0.5, 0.5, 0.5}
+\definecolor{keywordorange}{rgb}{0.8, 0.4, 0.0}
+\definecolor{typeblue}{rgb}{0.2, 0.6, 1.0}
+\definecolor{fggray}{rgb}{0.4, 0.4, 0.4}
+
+% Listes « Forces » (coche, même couleur que example) et « Limites » (triangle d’avertissement or/jaune)
+\newenvironment{forceslist}{%
+	\setbeamertemplate{itemize item}{\color{green!60!black}\checkmark}%
+	\color{green!60!black}%
+	\begin{itemize}
+		}{%
+	\end{itemize}%
+}
+% \newenvironment{limiteslist}{%
+% 	\setbeamertemplate{itemize item}{\raisebox{-0.25ex}{\texttwemoji{warning sign}}}%
+% 	{\color{warninggold}%
+% 		\begin{itemize}
+% 			}{%
+% 		\end{itemize}}%
+% }
+
+\setbeamercolor{block title warning}{fg=orange!60!yellow!90!black}
+
+\newenvironment{warningblock}[1]{%
+	\setbeamercolor{block title}{use=block title warning, fg=block title warning.fg}%
+
+	\setbeamercolor{itemize item}{use=block title warning, fg=block title warning.fg}
+	\setbeamertemplate{itemize item}{\small\faExclamationTriangle}
+
+	\setbeamercolor{itemize subitem}{use=block title warning, fg=block title warning.fg}
+	\setbeamertemplate{itemize item}{%
+		\small%
+		\ooalign{
+			\hfil\raisebox{0pt}{\color{black}\rule{2pt}{6pt}}\hfil\cr
+			\hfil\faExclamationTriangle\hfil\cr
+		}%
+	}
+
+	\begin{block}{#1}%
+		}{%
+	\end{block}%
+}
+
+\lstdefinelanguage{python}[]{python}{
+	morekeywords={Requires, Ensures, Invariant, Acc, MayCreate, MaySet, Implies,
+			ForAll, Result, Old, Previous, ToSeq, Unfolding, Fold, Assert, Assume,
+			Pure, Predicate, Sequence, PSet, MustTerminate, Level}
+}
+\lstset{
+	language=python, % Note: Consider changing to python if the default should be python
+	basicstyle=\ttfamily\color{fggray},
+	keywordstyle=\color{keywordorange}\bfseries,
+	stringstyle=\color{green!60!black},
+	commentstyle=\color{commentgray},
+	morekeywords={Requires, Ensures, Invariant, Acc, MayCreate, MaySet, Implies,
+			ForAll, Result, Old, Previous, ToSeq, Unfolding, Fold, Assert, Assume,
+			Pure, Predicate, Sequence, PSet, MustTerminate, Level},
+	numbers=none,
+	showstringspaces=false,
+	extendedchars=true
+}
+
+% TikZ
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, shapes.geometric}
+
+% TikZ pipeline colors
+\definecolor{pipeGreen}{HTML}{0F6E56}
+\definecolor{pipeOrange}{HTML}{D85A30}
+\definecolor{pipeBlue}{HTML}{378ADD}
+\definecolor{pipePurple}{HTML}{8B5CF6}
+\definecolor{pipeGray}{HTML}{5F5E5A}
+
+% Chemins (figures du rapport)
+\graphicspath{{figures/}}
