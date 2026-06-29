@@ -21,7 +21,10 @@ from tqdm import tqdm
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 API_URL = "https://rimap-risc.api.major.iric.ca/api/data"
-DB_PATH = "rimap_results.duckdb"
+# DB_PATH can be overridden via env var to keep the production DB safe
+# (e.g. `DB_PATH=/tmp/test/rimap_results.duckdb python scripts/rimap_pipeline.py`)
+import os
+DB_PATH = os.environ.get("DB_PATH", "rimap_results.duckdb")
 CHECKPOINT_FILE = "pipeline_checkpoint.txt"
 REQUEST_DELAY = 0  # no delay, let server response time be the rate limit
 MAX_WORKERS = 4  # parallel API calls (conservative)
