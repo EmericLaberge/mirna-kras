@@ -45,7 +45,9 @@ JACKSON_JARS = [
     f"{os.path.expanduser('~')}/.m2/repository/com/fasterxml/jackson/core/jackson-core/2.15.3/jackson-core-2.15.3.jar",
     f"{os.path.expanduser('~')}/.m2/repository/com/fasterxml/jackson/core/jackson-annotations/2.15.3/jackson-annotations-2.15.3.jar",
 ]
-DB_PATH = str(SCRIPT_DIR / "rimap_results.duckdb")
+# Override via env var (used by the Docker image to point the new DB at a
+# path outside the production DB); default to a sibling of the script.
+DB_PATH = os.environ.get("DB_PATH", str(SCRIPT_DIR / "rimap_results.duckdb"))
 JAVA_MAIN = "ca.iric.major.rinexus.rimaprisc.MiRScanS"
 MAX_WORKERS = 4  # parallel Java processes
 
@@ -86,7 +88,20 @@ def get_mirna_name_from_fasta():
     current_mimat = None
     current_seq = None
 
-    with open(str(SCRIPT_DIR / "mirnas.fa"), "r") as f:
+    # mirnas.fa can live in several places: SCRIPT_DIR (host default), or
+    # repo_root/data (Docker default, where the Dockerfile copies it).
+    # Allow override via MIRNAS_FA env var.
+    _candidates = [
+        os.environ.get("MIRNAS_FA"),
+        str(SCRIPT_DIR / "mirnas.fa"),
+        str(SCRIPT_DIR.parent / "data" / "mirnas.fa"),
+    ]
+    _mirnas_path = next((p for p in _candidates if p and os.path.exists(p)), None)
+    if not _mirnas_path:
+        raise FileNotFoundError(
+            "mirnas.fa not found. Tried: " + ", ".join(str(p) for p in _candidates if p)
+        )
+    with open(_mirnas_path, "r") as f:
         for line in f:
             line = line.strip()
             if line.startswith(">"):

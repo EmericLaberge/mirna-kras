@@ -43,6 +43,3 @@ site/
 *~
 #*#
 
-# mirnas.fa is a symlink to the source data, not a tracked file
-data/mirnas.fa
-scripts/mirnas.fa

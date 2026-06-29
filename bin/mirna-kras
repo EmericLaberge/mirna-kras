@@ -1,0 +1,284 @@
+#!/usr/bin/env python3
+"""mirna-kras - convenience CLI for running the pipeline in Docker.
+
+Subcommands (run with --help for details):
+
+  build      Build the Docker image
+  serve      Start the mkdocs dev server at http://localhost:8000
+  shell      Open an interactive shell inside the container
+  test-local Run the local pipeline smoke test (3 pairs, new DB)
+  test-api   Run the API smoke test (test_curl.py)
+  run        Run any script from scripts/ inside the container
+  pipeline   Run the full local pipeline (WARNING: takes hours)
+  python     Open a Python REPL with the pipeline scripts on sys.path
+  clean      Remove the Docker image and dangling build cache
+"""
+from __future__ import annotations
+
+import argparse
+import os
+import shlex
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+
+REPO_ROOT = Path(__file__).resolve().parent.parent
+IMAGE_NAME = "mirna-kras"
+DEFAULT_WORK = REPO_ROOT / "work"
+DEFAULT_GENCODE = Path(
+    "/home/emeric/maitrise/projets/projet-ift6292/data/gencode.v46.transcripts.fa.gz"
+)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Docker wrapper
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+def docker(*args, check=True):
+    """Run 'docker <args>' and stream output. Returns exit code."""
+    cmd = ["docker", *args]
+    print("\033[2m$ {}\033[0m".format(shlex.join(cmd)), file=sys.stderr)
+    return subprocess.call(cmd)
+
+
+def docker_run(
+    image,
+    cmd,
+    *,
+    work_mount=None,
+    repo_mount=True,
+    gencode_path=None,
+    extra_env=None,
+    interactive=False,
+    publish_ports=None,
+    extra_volumes=None,
+):
+    """Build a 'docker run' invocation for the mirna-kras image."""
+    work_mount = work_mount or DEFAULT_WORK
+    work_mount.mkdir(parents=True, exist_ok=True)
+
+    docker_args = ["run", "--rm",
+                    # Run as the host user so files written in /tmp/work are
+                    # owned by us and easy to clean up. Skip if running as root
+                    # in CI where there's no host UID to map to.
+                    "-u", "{}:{}".format(os.getuid(), os.getgid())]                    if hasattr(os, "getuid") and os.getuid() != 0 else ["run", "--rm"]
+    if interactive:
+        docker_args.append("-it")
+    if publish_ports:
+        for p in publish_ports:
+            docker_args += ["-p", p]
+    if repo_mount:
+        docker_args += ["-v", "{}:/app/repo".format(REPO_ROOT)]
+    if extra_volumes:
+        for v in extra_volumes:
+            docker_args += ["-v", v]
+
+    docker_args += ["-v", "{}:/tmp/work".format(work_mount)]
+
+    # GENCODE archive - pass through if it exists on the host
+    gencode_path = gencode_path or DEFAULT_GENCODE
+    if gencode_path.exists():
+        docker_args += ["-v", "{}:/tmp/work/gencode.v46.transcripts.fa.gz:ro".format(gencode_path)]
+    else:
+        print(
+            "ERROR: GENCODE archive not found at {}".format(gencode_path),
+            file=sys.stderr,
+        )
+        print(
+            "  Download from https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_46/gencode.v46.transcripts.fa.gz",
+            file=sys.stderr,
+        )
+        print(
+            "  and either place it there, or pass --gencode PATH to mirna-kras.",
+            file=sys.stderr,
+        )
+        return 2
+
+    docker_args += ["-w", "/tmp/work"]
+    docker_args += ["-e", "DB_PATH=/tmp/work/rimap_results.duckdb"]
+    docker_args += ["-e", "GENCODE_FASTA=/tmp/work/gencode.v46.transcripts.fa.gz"]
+    docker_args += [
+        "-e",
+        "JAVA_CLASSPATH=/app/archive/rimap_java_code/target/classes:/opt/rinexus-deps/*",
+    ]
+    docker_args += ["-e", "MCFLASHFOLD_PATH=/opt/MC-Flashfold"]
+    if extra_env:
+        for k, v in extra_env.items():
+            docker_args += ["-e", "{}={}".format(k, v)]
+
+    docker_args += [image] + list(cmd)
+    return docker(*docker_args, check=False)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Subcommands
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+def cmd_build(args):
+    return docker("build", "-t", IMAGE_NAME, str(REPO_ROOT))
+
+
+def cmd_serve(args):
+    return docker_run(
+        IMAGE_NAME,
+        ["mkdocs", "serve", "--dev-addr=0.0.0.0:8000"],
+        work_mount=args.work,
+        publish_ports=["8000:8000"],
+        extra_env={"PYTHONUNBUFFERED": "1"},
+    )
+
+
+def cmd_shell(args):
+    return docker_run(IMAGE_NAME, ["bash"], work_mount=args.work, interactive=True)
+
+
+def cmd_python(args):
+    return docker_run(
+        IMAGE_NAME,
+        ["python3", "-i", "-c",
+         "import sys; sys.path.insert(0, '/app/repo/scripts'); print('REPL ready, scripts on sys.path')"],
+        work_mount=args.work,
+        interactive=True,
+    )
+
+
+def cmd_run(args):
+    """Run any script from scripts/ inside the container."""
+    if not args.script:
+        print("error: --script is required for run", file=sys.stderr)
+        return 2
+    script_path = Path(args.script)
+    if not script_path.exists() and not (REPO_ROOT / "scripts" / script_path).exists():
+        print("error: script not found: {}".format(args.script), file=sys.stderr)
+        return 2
+    return docker_run(
+        IMAGE_NAME,
+        ["python3", "/app/repo/scripts/{}".format(script_path.name), *args.script_args],
+        work_mount=args.work,
+    )
+
+
+def cmd_test_local(args):
+    """Smoke test: 3 KRAS-201 pairs via the local pipeline, new DB, no API."""
+    helper = REPO_ROOT / "bin" / "smoke_test_local.py"
+    if not helper.exists():
+        print("error: missing helper {}".format(helper), file=sys.stderr)
+        return 2
+    return docker_run(
+        IMAGE_NAME,
+        ["python3", "/app/repo/bin/smoke_test_local.py"],
+        work_mount=args.work,
+    )
+
+
+def cmd_test_api(args):
+    """Run scripts/test_curl.py (single API call, no DB writes)."""
+    return docker_run(
+        IMAGE_NAME,
+        ["python3", "/app/repo/scripts/test_curl.py"],
+        work_mount=args.work,
+    )
+
+
+def cmd_pipeline(args):
+    """Run the full local pipeline (WARNING: hours)."""
+    if not args.yes:
+        print(
+            "WARNING: this runs the full local pipeline (~hours).\n"
+            "         pass --yes to confirm.",
+            file=sys.stderr,
+        )
+        return 1
+    extra_volumes = []
+    if args.production_db and args.production_db.exists():
+        extra_volumes.append("{}:/tmp/prod.duckdb:ro".format(args.production_db))
+    return docker_run(
+        IMAGE_NAME,
+        ["python3", "/app/repo/scripts/rimap_pipeline_local.py"],
+        work_mount=args.work,
+        gencode_path=args.gencode,
+        extra_volumes=extra_volumes,
+    )
+
+
+def cmd_clean(args):
+    print("Removing Docker image and dangling build cache...")
+    rc1 = docker("rmi", "-f", IMAGE_NAME, check=False)
+    rc2 = docker("builder", "prune", "-f", check=False)
+    return 0 if (rc1 in (0, 1)) and (rc2 in (0, 1)) else 1
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# CLI plumbing
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+SUBCOMMANDS = {
+    "build":      (cmd_build,    "Build the Docker image"),
+    "serve":      (cmd_serve,    "Start the mkdocs dev server at http://localhost:8000"),
+    "shell":      (cmd_shell,    "Open an interactive shell inside the container"),
+    "python":     (cmd_python,   "Open a Python REPL with scripts/ on sys.path"),
+    "run":        (cmd_run,      "Run any script from scripts/ inside the container"),
+    "test-local": (cmd_test_local, "Local pipeline smoke test: 3 pairs, new DB, no API"),
+    "test-api":   (cmd_test_api, "API smoke test: one RIMap-RISC call, no DB writes"),
+    "pipeline":   (cmd_pipeline, "Run the full local pipeline (hours)"),
+    "clean":      (cmd_clean,    "Remove the Docker image and dangling build cache"),
+}
+
+
+def build_parser():
+    p = argparse.ArgumentParser(
+        prog="mirna-kras",
+        description=__doc__,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    sub = p.add_subparsers(dest="cmd", required=True, metavar="<subcommand>")
+    work_arg = argparse.ArgumentParser(add_help=False)
+    work_arg.add_argument(
+        "--work",
+        type=Path,
+        default=DEFAULT_WORK,
+        help="Work directory (mounted at /tmp/work in the container). Default: {}".format(DEFAULT_WORK),
+    )
+
+    for name, (_, help_) in SUBCOMMANDS.items():
+        kwargs = {"parents": [work_arg]} if name != "clean" else {}
+        sub.add_parser(name, help=help_, **kwargs)
+
+    p_run = sub.choices["run"]
+    p_run.add_argument("script", help="Script name (e.g. nmf_analysis.py) or path")
+    p_run.add_argument("script_args", nargs=argparse.REMAINDER, help="Args forwarded to the script")
+
+    p_pipeline = sub.choices["pipeline"]
+    p_pipeline.add_argument("--yes", action="store_true", help="Confirm running the full pipeline (takes hours)")
+    p_pipeline.add_argument(
+        "--production-db",
+        type=Path,
+        default=None,
+        help="Optional: mount an existing production DB read-only to /tmp/prod.duckdb",
+    )
+    p_pipeline.add_argument(
+        "--gencode",
+        type=Path,
+        default=DEFAULT_GENCODE,
+        help="GENCODE archive path. Default: {}".format(DEFAULT_GENCODE),
+    )
+
+    return p
+
+
+def main():
+    if not shutil.which("docker"):
+        print("error: docker not found in PATH", file=sys.stderr)
+        return 1
+    parser = build_parser()
+    args = parser.parse_args()
+    handler, _ = SUBCOMMANDS[args.cmd]
+    return handler(args)
+
+
+if __name__ == "__main__":
+    sys.exit(main())
